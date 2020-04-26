@@ -1,0 +1,52 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <a href="#" class="subnav-toggle">(Expand/collapse all)</a>
+      <ul class="nav docs-sidenav">
+        <li>
+          <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li>
+          <a href="/docs/providers/gmailfilter/index.html">GmailFilter Provider</a>
+        </li>
+
+
+        <li>
+          <a href="#">Gmail Filter Settings</a>
+          <ul class="nav">
+
+            <li>
+              <a href="#">Data Sources</a>
+              <ul class="nav nav-auto-expand">
+                <li>
+                  <a href="/docs/providers/gmailfilter/d/filter.html">gmailfilter_filter</a>
+                </li>
+                <li>
+                  <a href="/docs/providers/gmailfilter/d/label.html">gmailfilter_label</a>
+                </li>
+              </ul>
+            </li>
+
+
+            <li>
+              <a href="#">Resources</a>
+              <ul class="nav nav-auto-expand">
+                <li>
+                  <a href="/docs/providers/gmailfilter/r/filter.html">gmailfilter_filter</a>
+                </li>
+                <li>
+                  <a href="/docs/providers/gmailfilter/r/label.html">gmailfilter_label</a>
+                </li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield %>
+<% end %>

@@ -1,0 +1,13 @@
+credentials.json
+client_secret.json
+.env
+
+**/terraform-provider-gmailfilter*
+
+tmp/
+
+.terraform*
+terraform.tfstate*
+terraform.tfvars*
+
+website-scaffold
