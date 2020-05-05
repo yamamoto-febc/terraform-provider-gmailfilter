@@ -45,6 +45,12 @@ func TestAccGmailFilterLabel_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "message_list_visibility", "show"),
 				),
 			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateId:     rand,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
