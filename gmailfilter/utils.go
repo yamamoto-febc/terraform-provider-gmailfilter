@@ -18,7 +18,7 @@ func handleNotFoundError(err error, d *schema.ResourceData, resource string) err
 		return nil
 	}
 
-	return fmt.Errorf("errob reading %s: %s", resource, err)
+	return fmt.Errorf("error reading %s: %s", resource, err)
 }
 
 func isGoogleApiErrorWithCode(err error, errCode int) bool {
