@@ -26,7 +26,6 @@ func resourceGmailfilterLabel() *schema.Resource {
 				for _, l := range res.Labels {
 					if l.Name == name {
 						d.SetId(l.Id)
-						d.Set("name", d.Id())
 						return []*schema.ResourceData{d}, nil
 					}
 				}
