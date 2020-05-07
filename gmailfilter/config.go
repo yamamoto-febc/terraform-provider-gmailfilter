@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
-	"github.com/hashicorp/terraform-plugin-sdk/httpclient"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/pathorcontents"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/httpclient"
 	"golang.org/x/oauth2"
 	googleoauth "golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"

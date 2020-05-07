@@ -1,20 +1,23 @@
 package gmailfilter
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceGmailfilterLabel() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGmailfilterLabelCreate,
-		Read:   resourceGmailfilterLabelRead,
-		Update: resourceGmailfilterLabelUpdate,
-		Delete: resourceGmailfilterLabelDelete,
+		CreateContext: resourceGmailfilterLabelCreate,
+		ReadContext:   resourceGmailfilterLabelRead,
+		UpdateContext: resourceGmailfilterLabelUpdate,
+		DeleteContext: resourceGmailfilterLabelDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -79,52 +82,52 @@ func resourceGmailfilterLabel() *schema.Resource {
 	}
 }
 
-func resourceGmailfilterLabelCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterLabelCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 
 	label := expandLabel(d)
 
 	label, err := config.gmailService.Users.Labels.Create(gmailUser, label).Do()
 	if err != nil {
-		return fmt.Errorf("error creating label: %s", err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error creating label: %s", err))}
 	}
 
 	d.SetId(label.Id)
-	return resourceGmailfilterLabelRead(d, meta)
+	return resourceGmailfilterLabelRead(ctx, d, meta)
 }
 
-func resourceGmailfilterLabelRead(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterLabelRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	label, err := config.gmailService.Users.Labels.Get(gmailUser, d.Id()).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, "Label")
 	}
 
-	return setLabelValuesToState(d, label)
+	return setLabelValuesToState(ctx, d, label)
 }
 
-func resourceGmailfilterLabelUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterLabelUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	if _, err := config.gmailService.Users.Labels.Get(gmailUser, d.Id()).Do(); err != nil {
-		return fmt.Errorf("error updating label[%s]: %s", d.Id(), err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error updating label[%s]: %s", d.Id(), err))}
 	}
 
 	label := expandLabel(d)
 	if _, err := config.gmailService.Users.Labels.Update(gmailUser, d.Id(), label).Do(); err != nil {
-		return fmt.Errorf("error updating label[%s]: %s", d.Id(), err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error updating label[%s]: %s", d.Id(), err))}
 	}
 
-	return resourceGmailfilterLabelRead(d, meta)
+	return resourceGmailfilterLabelRead(ctx, d, meta)
 }
 
-func resourceGmailfilterLabelDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterLabelDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	if _, err := config.gmailService.Users.Labels.Get(gmailUser, d.Id()).Do(); err != nil {
 		return handleNotFoundError(err, d, "Label")
 	}
 
 	if err := config.gmailService.Users.Labels.Delete(gmailUser, d.Id()).Do(); err != nil {
-		return fmt.Errorf("error deleting label[%s]: %s", d.Id(), err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error deleting label[%s]: %s", d.Id(), err))}
 	}
 
 	d.SetId("")

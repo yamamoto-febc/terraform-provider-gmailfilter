@@ -1,7 +1,10 @@
 package gmailfilter
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/gmail/v1"
 )
 
@@ -21,22 +24,22 @@ var validLabelColors = []string{
 	"#662e37", "#ebdbde", "#cca6ac", "#094228", "#42d692", "#16a765",
 }
 
-func setLabelValuesToState(d *schema.ResourceData, label *gmail.Label) error {
-	d.Set("name", label.Name)
+func setLabelValuesToState(ctx context.Context, d *schema.ResourceData, label *gmail.Label) diag.Diagnostics {
+	d.Set("name", label.Name) // nolint
 	if label.Color != nil {
-		d.Set("background_color", label.Color.BackgroundColor)
-		d.Set("text_color", label.Color.TextColor)
+		d.Set("background_color", label.Color.BackgroundColor) // nolint
+		d.Set("text_color", label.Color.TextColor)             // nolint
 	} else {
-		d.Set("background_color", "")
-		d.Set("text_color", "")
+		d.Set("background_color", "") // nolint
+		d.Set("text_color", "")       // nolint
 	}
-	d.Set("label_list_visibility", label.LabelListVisibility)
-	d.Set("message_list_visibility", label.MessageListVisibility)
-	d.Set("messages_total", label.MessagesTotal)
-	d.Set("messages_unread", label.MessagesUnread)
-	d.Set("threads_total", label.ThreadsTotal)
-	d.Set("threads_unread", label.ThreadsUnread)
-	d.Set("type", label.Type)
+	d.Set("label_list_visibility", label.LabelListVisibility)     // nolint
+	d.Set("message_list_visibility", label.MessageListVisibility) // nolint
+	d.Set("messages_total", label.MessagesTotal)                  // nolint
+	d.Set("messages_unread", label.MessagesUnread)                // nolint
+	d.Set("threads_total", label.ThreadsTotal)                    // nolint
+	d.Set("threads_unread", label.ThreadsUnread)                  // nolint
+	d.Set("type", label.Type)                                     // nolint
 	return nil
 }
 

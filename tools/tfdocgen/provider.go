@@ -8,13 +8,12 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 type Provider struct {
 	Name              string
-	TerraformProvider terraform.ResourceProvider
+	TerraformProvider *schema.Provider
 	DisplayNameFunc   func(name string) string
 	CategoryNameFunc  func(name string) string
 	CategoriesFunc    func() []string
@@ -50,21 +49,9 @@ func (p *Provider) init() {
 	}
 }
 
-func (p *Provider) getSchemaProvider() (*schema.Provider, error) {
-	sp, ok := p.TerraformProvider.(*schema.Provider)
-	if !ok {
-		return nil, fmt.Errorf("TerraformProvider is not *schema.Provider: %+v", p.TerraformProvider)
-	}
-	return sp, nil
-}
-
 func (p *Provider) Parameters() ([]*TemplateParameter, error) {
 	p.init()
 
-	sp, err := p.getSchemaProvider()
-	if err != nil {
-		return nil, err
-	}
 	var parameters []*TemplateParameter
 
 	// Provider
@@ -74,12 +61,12 @@ func (p *Provider) Parameters() ([]*TemplateParameter, error) {
 		ProviderDisplayName: p.DisplayNameFunc(p.Name),
 		Name:                p.Name,
 		DisplayName:         p.DisplayNameFunc(p.Name),
-		Schema:              NewSchema(sp.Schema),
+		Schema:              NewSchema(p.TerraformProvider.Schema),
 	})
 
 	// Resources
-	for _, rt := range sp.Resources() {
-		rs := sp.ResourcesMap[rt.Name]
+	for _, rt := range p.TerraformProvider.Resources() {
+		rs := p.TerraformProvider.ResourcesMap[rt.Name]
 		parameters = append(parameters, &TemplateParameter{
 			Type:                TypeResource,
 			ProviderName:        p.Name,
@@ -94,8 +81,8 @@ func (p *Provider) Parameters() ([]*TemplateParameter, error) {
 	}
 
 	// DataSources
-	for _, dt := range sp.DataSources() {
-		ds := sp.DataSourcesMap[dt.Name]
+	for _, dt := range p.TerraformProvider.DataSources() {
+		ds := p.TerraformProvider.DataSourcesMap[dt.Name]
 		parameters = append(parameters, &TemplateParameter{
 			Type:                TypeDataSource,
 			ProviderName:        p.Name,

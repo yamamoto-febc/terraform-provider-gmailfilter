@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/go-cty/cty"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	googleoauth "golang.org/x/oauth2/google"
 )
 
 // Provider returns a terraform.ResourceProvider.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"credentials": {
@@ -22,8 +23,8 @@ func Provider() terraform.ResourceProvider {
 					"GOOGLE_CLOUD_KEYFILE_JSON",
 					"GCLOUD_KEYFILE_JSON",
 				}, nil),
-				ValidateFunc: validateCredentials,
-				RequiredWith: []string{"impersonated_user_email"},
+				ValidateDiagFunc: validateCredentials,
+				RequiredWith:     []string{"impersonated_user_email"},
 			},
 			"impersonated_user_email": {
 				Type:     schema.TypeString,
@@ -45,20 +46,22 @@ func Provider() terraform.ResourceProvider {
 		},
 	}
 
-	provider.ConfigureFunc = func(d *schema.ResourceData) (interface{}, error) {
+	provider.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		terraformVersion := provider.TerraformVersion
 		if terraformVersion == "" {
 			// Terraform 0.12 introduced this field to the protocol
 			// We can therefore assume that if it's missing it's 0.10 or 0.11
 			terraformVersion = "0.11+compatible"
 		}
-		return providerConfigure(d, provider, terraformVersion)
+		return providerConfigure(ctx, d, provider, terraformVersion)
 	}
 
 	return provider
 }
 
-func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVersion string) (interface{}, error) {
+func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Provider, terraformVersion string) (interface{}, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	config := Config{
 		terraformVersion: terraformVersion,
 	}
@@ -70,14 +73,15 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 		config.ImpersonatedUserEmail = v.(string)
 	}
 
-	if err := config.LoadAndValidate(p.StopContext()); err != nil {
-		return nil, err
+	if err := config.LoadAndValidate(ctx); err != nil {
+		diags = append(diags, diag.FromErr(err))
+		return nil, diags
 	}
 
 	return &config, nil
 }
 
-func validateCredentials(v interface{}, k string) (warnings []string, errors []error) {
+func validateCredentials(v interface{}, path cty.Path) (diags diag.Diagnostics) {
 	if v == nil || v.(string) == "" {
 		return
 	}
@@ -87,8 +91,8 @@ func validateCredentials(v interface{}, k string) (warnings []string, errors []e
 		return
 	}
 	if _, err := googleoauth.CredentialsFromJSON(context.Background(), []byte(creds)); err != nil {
-		errors = append(errors,
-			fmt.Errorf("JSON credentials in %q are not valid: %s", creds, err))
+		diags = append(diags,
+			diag.FromErr(fmt.Errorf("JSON credentials in %q are not valid: %s", creds, err)))
 	}
 
 	return

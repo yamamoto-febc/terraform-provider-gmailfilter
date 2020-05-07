@@ -1,20 +1,23 @@
 package gmailfilter
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"google.golang.org/api/gmail/v1"
 )
 
 func resourceGmailfilterFilter() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGmailfilterFilterCreate,
-		Read:   resourceGmailfilterFilterRead,
-		Delete: resourceGmailfilterFilterDelete,
+		CreateContext: resourceGmailfilterFilterCreate,
+		ReadContext:   resourceGmailfilterFilterRead,
+		DeleteContext: resourceGmailfilterFilterDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"action": {
@@ -123,7 +126,7 @@ func resourceGmailfilterFilter() *schema.Resource {
 	}
 }
 
-func resourceGmailfilterFilterCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterFilterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 
 	filter := &gmail.Filter{
@@ -133,31 +136,31 @@ func resourceGmailfilterFilterCreate(d *schema.ResourceData, meta interface{}) e
 
 	filter, err := config.gmailService.Users.Settings.Filters.Create(gmailUser, filter).Do()
 	if err != nil {
-		return fmt.Errorf("error creating filter: %s", err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error creating filter: %s", err))}
 	}
 
 	d.SetId(filter.Id)
-	return resourceGmailfilterFilterRead(d, meta)
+	return resourceGmailfilterFilterRead(ctx, d, meta)
 }
 
-func resourceGmailfilterFilterRead(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterFilterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	filter, err := config.gmailService.Users.Settings.Filters.Get(gmailUser, d.Id()).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, "Filter")
 	}
 
-	return setFilterValuesToState(d, filter)
+	return setFilterValuesToState(ctx, d, filter)
 }
 
-func resourceGmailfilterFilterDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceGmailfilterFilterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	if _, err := config.gmailService.Users.Settings.Filters.Get(gmailUser, d.Id()).Do(); err != nil {
 		return handleNotFoundError(err, d, "Filter")
 	}
 
 	if err := config.gmailService.Users.Settings.Filters.Delete(gmailUser, d.Id()).Do(); err != nil {
-		return fmt.Errorf("error deleting filter[%s]: %s", d.Id(), err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error deleting filter[%s]: %s", d.Id(), err))}
 	}
 
 	d.SetId("")

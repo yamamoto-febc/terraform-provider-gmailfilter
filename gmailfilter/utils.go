@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+
 	"github.com/hashicorp/errwrap"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/googleapi"
 )
 
-func handleNotFoundError(err error, d *schema.ResourceData, resource string) error {
+func handleNotFoundError(err error, d *schema.ResourceData, resource string) diag.Diagnostics {
 	if isGoogleApiErrorWithCode(err, 404) {
 		log.Printf("[WARN] Removing %s because it's gone", resource)
 		// The resource doesn't exist anymore
@@ -18,7 +20,7 @@ func handleNotFoundError(err error, d *schema.ResourceData, resource string) err
 		return nil
 	}
 
-	return fmt.Errorf("error reading %s: %s", resource, err)
+	return diag.Diagnostics{diag.FromErr(fmt.Errorf("error reading %s: %s", resource, err))}
 }
 
 func isGoogleApiErrorWithCode(err error, errCode int) bool {

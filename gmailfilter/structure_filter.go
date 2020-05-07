@@ -1,18 +1,21 @@
 package gmailfilter
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/gmail/v1"
 )
 
-func setFilterValuesToState(d *schema.ResourceData, filter *gmail.Filter) error {
+func setFilterValuesToState(ctx context.Context, d *schema.ResourceData, filter *gmail.Filter) diag.Diagnostics {
 	if err := d.Set("action", []interface{}{flattenFilterAction(filter.Action)}); err != nil {
-		return fmt.Errorf("error setting action: %s", err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error setting action: %s", err))}
 	}
 	if err := d.Set("criteria", []interface{}{flattenFilterCriteria(filter.Criteria)}); err != nil {
-		return fmt.Errorf("error setting criteria: %s", err)
+		return diag.Diagnostics{diag.FromErr(fmt.Errorf("error setting action: %s", fmt.Errorf("error setting criteria: %s", err)))}
 	}
 	return nil
 }
