@@ -72,5 +72,7 @@ jobs:
         run: make tools
 
       - name: make test
+        env:
+          TF_ACC_TERRAFORM_VERSION: "0.12.24"
         run: make test
 
