@@ -14,7 +14,24 @@ func resourceGmailfilterLabel() *schema.Resource {
 		Update: resourceGmailfilterLabelUpdate,
 		Delete: resourceGmailfilterLabelDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				config := meta.(*Config)
+				name := d.Id()
+
+				res, err := config.gmailService.Users.Labels.List(gmailUser).Do()
+				if err != nil {
+					return nil, handleNotFoundError(err, d, "Label")
+				}
+
+				for _, l := range res.Labels {
+					if l.Name == name {
+						d.SetId(l.Id)
+						return []*schema.ResourceData{d}, nil
+					}
+				}
+
+				return nil, fmt.Errorf("no label with name=%q found", name)
+			},
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
