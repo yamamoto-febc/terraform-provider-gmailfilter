@@ -96,6 +96,12 @@ https://www.googleapis.com/auth/gmail.labels,\
 https://www.googleapis.com/auth/gmail.settings.basic
 ```
 
+## Generate Terraform files from your existing infrastructure with Terraformer
+
+[Terraformer](https://github.com/GoogleCloudPlatform/terraformer) includes support for this provider and can generate Terraform files from your existing infrastructure.
+
+See the Terraformer [README](https://github.com/GoogleCloudPlatform/terraformer/blob/master/README.md#use-with-gmailfilter) for more information.
+
 ## Known Issues
 
 Currently, the provider doesn't support managing the forwarding addresses.  
