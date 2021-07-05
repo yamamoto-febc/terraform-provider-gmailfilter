@@ -8,12 +8,12 @@ clean:
 
 .PHONY: tools
 tools:
-	GO111MODULE=off go get github.com/x-motemen/gobump/cmd/gobump
-	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
-	GO111MODULE=off go get github.com/tcnksm/ghr
-	GO111MODULE=off go get github.com/bflad/tfproviderdocs
-	GO111MODULE=off go get github.com/bflad/tfproviderlint/cmd/tfproviderlintx
-	GO111MODULE=off go get github.com/client9/misspell/cmd/misspell
+	go install github.com/x-motemen/gobump/cmd/gobump@v0.2.0
+	go install golang.org/x/tools/cmd/goimports@v0.1.4
+	go install github.com/tcnksm/ghr@v0.14.0
+	go install github.com/bflad/tfproviderdocs@v0.9.1
+	go install github.com/bflad/tfproviderlint/cmd/tfproviderlintx@v0.27.0
+	go install github.com/client9/misspell/cmd/misspell@v0.3.4
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.24.0
 
 
