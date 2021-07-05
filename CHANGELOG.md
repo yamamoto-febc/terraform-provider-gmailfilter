@@ -1,6 +1,9 @@
 ## 1.0.2 (Unreleased)
 
-*
+MISC:
+
+  * Fix disabled commands for workflows [GH-9] @rakiyoshi 
+  * Update to use go install for tools [GH-11] @rakiyoshi
 
 ## 1.0.1 (2020-05-07)
 
