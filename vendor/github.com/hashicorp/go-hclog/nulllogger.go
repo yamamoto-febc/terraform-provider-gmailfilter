@@ -35,11 +35,7 @@ func (l *nullLogger) IsWarn() bool { return false }
 
 func (l *nullLogger) IsError() bool { return false }
 
-func (l *nullLogger) ImpliedArgs() []interface{} { return []interface{}{} }
-
 func (l *nullLogger) With(args ...interface{}) Logger { return l }
-
-func (l *nullLogger) Name() string { return "" }
 
 func (l *nullLogger) Named(name string) Logger { return l }
 

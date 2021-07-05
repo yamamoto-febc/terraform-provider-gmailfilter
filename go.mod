@@ -3,7 +3,6 @@ module github.com/yamamoto-febc/terraform-provider-gmailfilter
 go 1.14
 
 require (
-	github.com/bflad/tfproviderdocs v0.9.1 // indirect
 	github.com/hashicorp/errwrap v1.0.0
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/hashicorp/terraform-plugin-sdk v1.10.0
