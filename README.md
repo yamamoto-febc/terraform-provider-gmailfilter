@@ -3,7 +3,8 @@
 ![Test Status](https://github.com/yamamoto-febc/terraform-provider-gmailfilter/workflows/Tests/badge.svg)
 
 - Terraform Website: https://terraform.io
-- Documentation: see [website/docs](website/docs) dir
+- Terraform Registry: https://registry.terraform.io/providers/yamamoto-febc/gmailfilter/latest/
+- Documentation: https://registry.terraform.io/providers/yamamoto-febc/gmailfilter/latest/docs
 
 ## Usage Example
 
