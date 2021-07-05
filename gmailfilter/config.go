@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/pathorcontents"
-	"github.com/hashicorp/terraform-plugin-sdk/httpclient"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
+	"github.com/mitchellh/go-homedir"
 	"golang.org/x/oauth2"
 	googleoauth "golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
@@ -65,7 +66,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	// This timeout is a timeout per HTTP request, not per logical operation.
 	client.Timeout = 30 * time.Second
 
-	tfUserAgent := httpclient.TerraformUserAgent(c.terraformVersion)
+	tfUserAgent := terraformUserAgent(c.terraformVersion)
 	providerVersion := fmt.Sprintf("terraform-provider-gmailfilter/%s", Version)
 	userAgent := fmt.Sprintf("%s %s", tfUserAgent, providerVersion)
 
@@ -83,7 +84,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 
 func (c *Config) getTokenSource(clientScopes []string) (oauth2.TokenSource, error) {
 	if c.Credentials != "" && c.ImpersonatedUserEmail != "" {
-		contents, _, err := pathorcontents.Read(c.Credentials)
+		contents, _, err := readFromPathOrContent(c.Credentials)
 		if err != nil {
 			return nil, fmt.Errorf("Error loading credentials: %s", err)
 		}
@@ -117,6 +118,31 @@ func (c *Config) getTokenSource(clientScopes []string) (oauth2.TokenSource, erro
 	log.Printf("[INFO] Authenticating using DefaultClient...")
 	log.Printf("[INFO]   -- Scopes: %s", clientScopes)
 	return googleoauth.DefaultTokenSource(context.Background(), clientScopes...)
+}
+
+func readFromPathOrContent(poc string) (string, bool, error) {
+	if len(poc) == 0 {
+		return poc, false, nil
+	}
+
+	path := poc
+	if path[0] == '~' {
+		var err error
+		path, err = homedir.Expand(path)
+		if err != nil {
+			return path, true, err
+		}
+	}
+
+	if _, err := os.Stat(path); err == nil {
+		contents, err := ioutil.ReadFile(path)
+		if err != nil {
+			return string(contents), true, err
+		}
+		return string(contents), true, nil
+	}
+
+	return poc, false, nil
 }
 
 type serviceAccountFile struct {

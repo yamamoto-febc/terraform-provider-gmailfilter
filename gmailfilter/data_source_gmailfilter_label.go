@@ -1,16 +1,18 @@
 package gmailfilter
 
 import (
+	"context"
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/gmail/v1"
 )
 
 func dataSourceGmailfilterLabel() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGmailfilterLabelRead,
+		ReadContext: dataSourceGmailfilterLabelRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -66,13 +68,13 @@ func dataSourceGmailfilterLabel() *schema.Resource {
 	}
 }
 
-func dataSourceGmailfilterLabelRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceGmailfilterLabelRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	name := d.Get("name").(string)
 
 	res, err := config.gmailService.Users.Labels.List(gmailUser).Do()
 	if err != nil {
-		return handleNotFoundError(err, d, "Label")
+		return diag.FromErr(handleNotFoundError(err, d, "Label"))
 	}
 
 	var label *gmail.Label
@@ -86,9 +88,9 @@ func dataSourceGmailfilterLabelRead(d *schema.ResourceData, meta interface{}) er
 	if label == nil {
 		d.SetId("")
 		log.Print("[WARN] Removing Label because it's gone")
-		return fmt.Errorf("no label with name=%q found", name)
+		return diag.FromErr(fmt.Errorf("no label with name=%q found", name))
 	}
 
 	d.SetId(label.Id)
-	return setLabelValuesToState(d, label)
+	return diag.FromErr(setLabelValuesToState(d, label))
 }
