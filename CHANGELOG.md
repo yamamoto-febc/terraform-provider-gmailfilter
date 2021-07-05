@@ -1,7 +1,8 @@
-## 1.0.2 (Unreleased)
+## 1.1.0 (Unreleased)
 
 MISC:
 
+  * Preparing to publish with Terraform Registry [GH-13] @yamamoto-febc
   * Fix disabled commands for workflows [GH-9] @rakiyoshi 
   * Update to use go install for tools [GH-11] @rakiyoshi
 
