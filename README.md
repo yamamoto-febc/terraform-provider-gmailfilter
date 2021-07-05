@@ -8,6 +8,20 @@
 ## Usage Example
 
 ```hcl
+# Configure the SakuraCloud Provider
+terraform {
+  required_providers {
+    sakuracloud = {
+      source = "yamamoto-febc/gmailfilter"
+
+      # We recommend pinning to the specific version of the SakuraCloud Provider you're using
+      # since new versions are released frequently
+      version = "1.1.0"
+      #version = "~> 1"
+    }
+  }
+}
+
 resource gmailfilter_filter "example" {
   criteria {
     # exclude_chats   = false
@@ -40,11 +54,6 @@ resource gmailfilter_label "example" {
 - [Terraform](https://terraform.io) v0.12+
 
 ## Installation
-
-### Setup the Provider Plugin
-
-To install the provider plugin, please see the [Terraform documentation](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).
-The plugin executables can download from [Releases](https://github.com/yamamoto-febc/terraform-provider-gmailfilter/releases/latest).
 
 ### Enable Gmail APIs
 
@@ -110,6 +119,6 @@ For details, see [Automatically forward Gmail messages to another account](https
 
 ## License
 
- `terraform-proivder-gmailfilter` Copyright (C) 2020 terraform-provider-gmailfilter authors.
+ `terraform-proivder-gmailfilter` Copyright (C) 2020-2021 terraform-provider-gmailfilter authors.
  
   This project is published under [Mozilla Public License 2.0](LICENSE).
