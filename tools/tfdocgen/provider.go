@@ -8,13 +8,12 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 type Provider struct {
 	Name              string
-	TerraformProvider terraform.ResourceProvider
+	TerraformProvider *schema.Provider
 	DisplayNameFunc   func(name string) string
 	CategoryNameFunc  func(name string) string
 	CategoriesFunc    func() []string
@@ -51,11 +50,7 @@ func (p *Provider) init() {
 }
 
 func (p *Provider) getSchemaProvider() (*schema.Provider, error) {
-	sp, ok := p.TerraformProvider.(*schema.Provider)
-	if !ok {
-		return nil, fmt.Errorf("TerraformProvider is not *schema.Provider: %+v", p.TerraformProvider)
-	}
-	return sp, nil
+	return p.TerraformProvider, nil
 }
 
 func (p *Provider) Parameters() ([]*TemplateParameter, error) {

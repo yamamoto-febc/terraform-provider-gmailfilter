@@ -1,12 +1,15 @@
 package gmailfilter
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceGmailfilterFilter() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGmailfilterFilterRead,
+		ReadContext: dataSourceGmailfilterFilterRead,
 		Schema: map[string]*schema.Schema{
 			"filter_id": {
 				Type:        schema.TypeString,
@@ -95,16 +98,16 @@ func dataSourceGmailfilterFilter() *schema.Resource {
 	}
 }
 
-func dataSourceGmailfilterFilterRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceGmailfilterFilterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	config := meta.(*Config)
 	id := d.Get("filter_id").(string)
 
 	filter, err := config.gmailService.Users.Settings.Filters.Get(gmailUser, id).Do()
 	if err != nil {
-		return handleNotFoundError(err, d, "Filter")
+		return diag.FromErr(handleNotFoundError(err, d, "Filter"))
 	}
 
 	d.SetId(id)
 	d.Set("filter_id", id)
-	return setFilterValuesToState(d, filter)
+	return diag.FromErr(setFilterValuesToState(d, filter))
 }
