@@ -4,13 +4,10 @@ go 1.16
 
 require (
 	github.com/hashicorp/errwrap v1.0.0
-	github.com/hashicorp/go-cleanhttp v0.5.1
-	github.com/hashicorp/terraform-plugin-sdk v1.10.0
+	github.com/hashicorp/go-cleanhttp v0.5.2
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
 	github.com/mattn/go-isatty v0.0.12 // indirect
-	github.com/stretchr/testify v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
-	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	google.golang.org/api v0.9.0
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
-	gopkg.in/yaml.v2 v2.2.7 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	google.golang.org/api v0.29.0
 )
