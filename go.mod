@@ -1,6 +1,6 @@
 module github.com/yamamoto-febc/terraform-provider-gmailfilter
 
-go 1.14
+go 1.16
 
 require (
 	github.com/hashicorp/errwrap v1.0.0

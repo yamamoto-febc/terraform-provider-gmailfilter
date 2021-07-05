@@ -1,4 +1,4 @@
-FROM golang:1.14 as builder
+FROM golang:1.16 as builder
 
 RUN  apt-get update && apt-get -y install bash git make zip bzr && apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 ADD . /go/src/github.com/yamamoto-febc/terraform-provider-gmailfilter
