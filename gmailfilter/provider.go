@@ -33,6 +33,12 @@ func Provider() *schema.Provider {
 				}, nil),
 				RequiredWith: []string{"credentials"},
 			},
+			"scopes": {
+				Type:         schema.TypeList,
+				Optional:     true,
+				Elem:         &schema.Schema{Type: schema.TypeString},
+				RequiredWith: []string{"credentials", "impersonated_user_email"},
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{

@@ -32,15 +32,21 @@ type Config struct {
 	context          context.Context
 	terraformVersion string
 	userAgent        string
+	scopes           []string
 
 	tokenSource oauth2.TokenSource
 }
 
+var DefaultClientScopes = []string{
+	gmail.GmailLabelsScope,
+	gmail.GmailSettingsBasicScope,
+}
+
 func (c *Config) LoadAndValidate(ctx context.Context) error {
-	tokenSource, err := c.getTokenSource([]string{
-		gmail.GmailLabelsScope,
-		gmail.GmailSettingsBasicScope,
-	})
+	if len(c.scopes) == 0 {
+		c.scopes = DefaultClientScopes
+	}
+	tokenSource, err := c.getTokenSource(c.scopes)
 	if err != nil {
 		return err
 	}
@@ -105,11 +111,8 @@ func (c *Config) getTokenSource(clientScopes []string) (oauth2.TokenSource, erro
 		conf := jwt.Config{
 			Email:      serviceAccount.ClientEmail,
 			PrivateKey: []byte(serviceAccount.PrivateKey),
-			Scopes: []string{
-				gmail.GmailLabelsScope,
-				gmail.GmailSettingsBasicScope,
-			},
-			TokenURL: "https://oauth2.googleapis.com/token",
+			Scopes:     clientScopes,
+			TokenURL:   "https://oauth2.googleapis.com/token",
 		}
 		conf.Subject = c.ImpersonatedUserEmail
 		return conf.TokenSource(context.Background()), nil
