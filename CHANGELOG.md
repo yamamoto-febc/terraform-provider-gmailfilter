@@ -1,3 +1,9 @@
+## 1.1.1 (Unreleased)
+
+MISC:
+
+  * Added -debug flag to enable debugging of providers [GH-14] @yamamoto-febc
+
 ## 1.1.0 (2021-07-05)
 
 MISC:
