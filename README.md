@@ -9,13 +9,13 @@
 ## Usage Example
 
 ```hcl
-# Configure the SakuraCloud Provider
+# Configure the gmailfilter Provider
 terraform {
   required_providers {
-    sakuracloud = {
+    gmailfilter = {
       source = "yamamoto-febc/gmailfilter"
 
-      # We recommend pinning to the specific version of the SakuraCloud Provider you're using
+      # We recommend pinning to the specific version of the gmailfilter Provider you're using
       # since new versions are released frequently
       version = "1.1.0"
       #version = "~> 1"
