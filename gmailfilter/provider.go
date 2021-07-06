@@ -36,8 +36,9 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"gmailfilter_filter": dataSourceGmailfilterFilter(),
-			"gmailfilter_label":  dataSourceGmailfilterLabel(),
+			"gmailfilter_filter":             dataSourceGmailfilterFilter(),
+			"gmailfilter_label":              dataSourceGmailfilterLabel(),
+			"gmailfilter_forwarding_address": dataSourceGmailfilterForwardingAddress(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gmailfilter_filter": resourceGmailfilterFilter(),
