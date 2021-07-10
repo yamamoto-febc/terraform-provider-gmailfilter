@@ -33,15 +33,23 @@ func Provider() *schema.Provider {
 				}, nil),
 				RequiredWith: []string{"credentials"},
 			},
+			"scopes": {
+				Type:         schema.TypeList,
+				Optional:     true,
+				Elem:         &schema.Schema{Type: schema.TypeString},
+				RequiredWith: []string{"credentials", "impersonated_user_email"},
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"gmailfilter_filter": dataSourceGmailfilterFilter(),
-			"gmailfilter_label":  dataSourceGmailfilterLabel(),
+			"gmailfilter_filter":             dataSourceGmailfilterFilter(),
+			"gmailfilter_label":              dataSourceGmailfilterLabel(),
+			"gmailfilter_forwarding_address": dataSourceGmailfilterForwardingAddress(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"gmailfilter_filter": resourceGmailfilterFilter(),
-			"gmailfilter_label":  resourceGmailfilterLabel(),
+			"gmailfilter_filter":             resourceGmailfilterFilter(),
+			"gmailfilter_label":              resourceGmailfilterLabel(),
+			"gmailfilter_forwarding_address": resourceGmailfilterForwardingAddress(),
 		},
 	}
 
